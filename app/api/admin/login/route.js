@@ -1,30 +1,47 @@
-import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import dbConnect from "@/lib/dbConnect";
-import Admin from "@/models/Admin";
-import { generateToken } from "@/lib/generateToken";
+import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
-  await dbConnect();
 
-  const { email, password } = await req.json();
+  const body = await req.json();
+  const { email, password } = body;
 
-  const admin = await Admin.findOne({ email });
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-  if (!admin) {
-    return NextResponse.json({ message: "Invalid Email" }, { status: 401 });
+  // check email
+  if (email !== adminEmail) {
+    return NextResponse.json({ message: "Invalid email" }, { status: 401 });
   }
 
-  const isMatch = await bcrypt.compare(password, admin.password);
+  // check password
+  const isMatch = await bcrypt.compare(password, adminPasswordHash);
 
   if (!isMatch) {
-    return NextResponse.json({ message: "Invalid Password" }, { status: 401 });
+    return NextResponse.json({ message: "Invalid password" }, { status: 401 });
   }
 
-  const token = generateToken(admin._id);
+  // create token
+  const token = jwt.sign(
+    { role: "admin" },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
 
-  return NextResponse.json({
-    token,
-    message: "Login Successful",
+  // response create
+  const response = NextResponse.json({
+    success: true,
+    message: "Login successful"
   });
+
+  // cookie set
+  response.cookies.set("token", token, {
+    httpOnly: true,
+    secure: false,
+    path: "/",
+    maxAge: 60 * 60 * 24
+  });
+
+  return response;
 }

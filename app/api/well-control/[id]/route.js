@@ -37,14 +37,10 @@ export async function PUT(req, { params }) {
     const { id } = params;
     const data = await req.json();
 
-    const updated = await WellControl.findByIdAndUpdate(
-      id,
-      data,
-      {
-        returnDocument: "after",
-        runValidators: true,
-      }
-    );
+    const updated = await WellControl.findByIdAndUpdate(id, data, {
+      returnDocument: "after",
+      runValidators: true,
+    });
 
     if (!updated) {
       return NextResponse.json(
@@ -54,12 +50,8 @@ export async function PUT(req, { params }) {
     }
 
     return NextResponse.json(updated);
-
   } catch (error) {
-    return NextResponse.json(
-      { message: "Update failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Update failed" }, { status: 500 });
   }
 }
 
@@ -67,18 +59,17 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     await connectDB();
-    await verifyToken(req);
+
+    await verifyToken(req); // protect admin
 
     const { id } = params;
 
     await WellControl.findByIdAndDelete(id);
 
-    return NextResponse.json({ message: "Deleted successfully" });
-
+    return NextResponse.json({
+      message: "Deleted successfully",
+    });
   } catch (error) {
-    return NextResponse.json(
-      { message: "Delete failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Delete failed" }, { status: 500 });
   }
 }

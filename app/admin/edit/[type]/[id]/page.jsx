@@ -6,7 +6,7 @@ import axios from "axios";
 
 export default function EditArticle() {
 
-  const { id } = useParams();   // 🔥 important
+  const { id, type } = useParams();   // 🔥 dynamic
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -21,11 +21,14 @@ export default function EditArticle() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ================= FETCH ARTICLE =================
+  // ================= FETCH =================
+
   const fetchData = async () => {
     try {
-      const response = await axios.get(`/api/well-control/${id}`);
-      const article = response.data;
+
+      const res = await axios.get(`/api/${type}/${id}`);
+
+      const article = res.data;
 
       setForm({
         title: article.title || "",
@@ -37,6 +40,7 @@ export default function EditArticle() {
       });
 
       setLoading(false);
+
     } catch (err) {
       setError("Article not found");
       setLoading(false);
@@ -44,10 +48,11 @@ export default function EditArticle() {
   };
 
   useEffect(() => {
-    if (id) fetchData();
-  }, [id]);
+    if (id && type) fetchData();
+  }, [id, type]);
 
   // ================= HANDLE INPUT =================
+
   function handleChange(e) {
     setForm({
       ...form,
@@ -56,12 +61,15 @@ export default function EditArticle() {
   }
 
   // ================= UPDATE =================
+
   async function handleUpdate() {
+
     try {
+
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `/api/well-control/${id}`,
+        `/api/${type}/${id}`,
         form,
         {
           headers: {
@@ -73,16 +81,22 @@ export default function EditArticle() {
       router.push("/admin/dashboard");
 
     } catch (err) {
+
       alert("Update failed");
+
     }
+
   }
 
   if (loading) return <div className="p-10">Loading...</div>;
   if (error) return <div className="p-10 text-red-500">{error}</div>;
 
   return (
-    <div className="p-10 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">Edit Article</h1>
+    <div className="p-10 relative z-[99] max-w-3xl mx-auto">
+
+      <h1 className="text-3xl font-bold mb-8">
+        Edit {type} Article
+      </h1>
 
       <input
         name="title"
@@ -141,6 +155,7 @@ export default function EditArticle() {
       >
         Update Article
       </button>
+
     </div>
   );
 }

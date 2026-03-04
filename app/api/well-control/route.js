@@ -5,12 +5,14 @@ import { verifyToken } from "@/middleware/authMiddleware";
 
 export async function POST(req) {
   await connectDB();
+
   try {
-    // await verifyToken(req);
+    await verifyToken(req); // protect admin route
+
     const data = await req.json();
+
     const article = await WellControl.create(data);
-    console.log("data ",data)
-    console.log("article ",article)
+
     return NextResponse.json(article);
   } catch (error) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
