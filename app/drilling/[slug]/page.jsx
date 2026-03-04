@@ -1,20 +1,29 @@
 export async function generateMetadata({ params }) {
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/well-control`);
-    const articles = await res.json();
-  
-    const article = articles.find(a => a.slug === params.slug);
-  
+  const { slug } = await params;   // ✅ unwrap params
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/drilling`);
+  const articles = await res.json();
+
+  const article = articles.find((a) => a.slug === slug);
+
+  if (!article) {
     return {
-      title: article.title,
-      description: article.description.slice(0,150),
+      title: "Article Not Found",
+      description: "Article not available"
     };
   }
+
+  return {
+    title: article.title,
+    description: article.description.slice(0,150),
+  };
+}
 
 async function getArticle(slug) {
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/well-control`,
+      `${process.env.NEXT_PUBLIC_URL}/api/drilling`,
       { cache: "no-store" }
     );
   
@@ -24,14 +33,15 @@ async function getArticle(slug) {
   }
   
   export default async function Article({ params }) {
+
+    const { slug } = await params;   // ✅ unwrap params
   
-    const article = await getArticle(params.slug);
+    const article = await getArticle(slug);
   
     if (!article) return <h1>Article Not Found</h1>;
   
     return (
-  
-      <div className="max-w-4xl mx-auto p-10">
+      <div className="max-w-4xl relative z-20 mt-10 sm:mt-20 mx-auto p-10">
   
         <h1 className="text-4xl font-bold mb-6">
           {article.title}

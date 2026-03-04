@@ -8,10 +8,9 @@ const geistSans = Geist({
 });
 const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
 });
-
 const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
@@ -31,20 +30,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`
-          ${manrope.variable} 
-          ${playfair.variable} 
-          ${geistSans.variable}
-          ${geistMono.variable}
-        antialiased`}
+        className={`${playfair.variable} ${geistSans.variable} ${geistMono.variable} ${manrope.variable} font-manrope antialiased`}
       >
-      <header >
-      <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,0,0,0.85)] via-[rgba(0,0,0,0.20)] to-[rgba(0,0,0,0.30)]"></div>
-      <Navbar />
+        <header>
+          <div className="absolute inset-0 bg-gradient-to-r from-[rgba(0,0,0,0.85)] via-[rgba(0,0,0,0.20)] to-[rgba(0,0,0,0.30)]"></div>
+          <Navbar />
 
-        {children}
-      </header>
-     
+          {children}
+        </header>
       </body>
     </html>
   );

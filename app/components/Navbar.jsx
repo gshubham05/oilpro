@@ -16,7 +16,7 @@ export default function Navbar() {
         {/* Logo */}
       <Link
         href="/"
-        className="text-white flex justify-center items-center text-xl font-bold"
+        className="text-white hover:text-yellow-400 transition flex justify-center items-center text-xl font-bold"
       >
         <h1>OilPro</h1>
         <Logo />
@@ -41,7 +41,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <div className="hidden md:flex">
+        <div className="hidden md:flex hover:text-yellow-400 transition">
           <Link href='/admin/login'>Login</Link>
         </div>
 
