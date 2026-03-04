@@ -1,3 +1,5 @@
+import '../../well-control/[slug]/Wellcontrol.css'
+
 export async function generateMetadata({ params }) {
 
   const { slug } = await params;   // ✅ unwrap params
@@ -52,7 +54,7 @@ async function getArticle(slug) {
           className="w-full rounded mb-6"
         />
   
-        <div
+        <div className='article-content'
           dangerouslySetInnerHTML={{ __html: article.description }}
         />
   

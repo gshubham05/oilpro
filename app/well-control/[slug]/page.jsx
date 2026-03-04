@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import dbConnect from "@/lib/dbConnect";
 import WellControl from "@/models/WellControl";
-
+import './Wellcontrol.css'
 export async function generateMetadata({ params }) {
   await dbConnect();
   const { slug } = await params;
@@ -81,7 +81,7 @@ return (
 
         {/* Content */}
         <div
-          className="prose prose-invert max-w-none text-gray-300"
+          className="prose prose-invert max-w-none text-gray-300 article-content"
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
       </div>
