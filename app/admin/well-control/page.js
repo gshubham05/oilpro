@@ -49,6 +49,7 @@ export default function AdminWellControl() {
         mediaType: "image",
       });
     } else {
+      console.log(res);
       alert("Something went wrong ❌");
     }
   };
