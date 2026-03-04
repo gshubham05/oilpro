@@ -1,44 +1,94 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { NextResponse } from "next/server";
+"use client";
 
-export async function POST(req) {
-  const body = await req.json();
-  const { email, password } = body;
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+export default function AdminLogin() {
 
-  // check email
-  if (email !== adminEmail) {
-    return NextResponse.json({ message: "Invalid email" }, { status: 401 });
+  const router = useRouter();
+
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  });
+
+  const [error, setError] = useState("");
+
+  function handleChange(e) {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   }
 
-  // check password
-  const isMatch = await bcrypt.compare(password, adminPasswordHash);
+  async function handleSubmit(e) {
 
-  if (!isMatch) {
-    return NextResponse.json({ message: "Invalid password" }, { status: 401 });
+    e.preventDefault();
+    setError("");
+
+    try {
+
+      const res = await axios.post("/api/admin/login", form);
+
+      if (res.data.success) {
+        router.push("/admin/dashboard");
+      }
+
+    } catch (err) {
+
+      setError(err.response?.data?.message || "Login failed");
+
+    }
+
   }
 
-  // create token
-  const token = jwt.sign({ role: "admin" }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
-  });
+  return (
+    <div className="min-h-screen relative z-20 flex items-center justify-center bg-black text-white">
 
-  // create response
-  const response = NextResponse.json({
-    success: true,
-    message: "Login successful",
-  });
+      <div className="bg-zinc-900 p-10 rounded-xl w-[400px] border border-zinc-800">
 
-  // set cookie
-  response.cookies.set("token", token, {
-    httpOnly: true,
-    secure: false,
-    path: "/",
-    maxAge: 60 * 60 * 24,
-  });
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          Admin Login
+        </h1>
 
-  return response;
+        {error && (
+          <p className="text-red-500 mb-4 text-center">{error}</p>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+          <input
+            type="text"
+            name="email"
+            placeholder="Admin Email"
+            value={form.email}
+            onChange={handleChange}
+            className="p-3 rounded bg-black border border-zinc-700"
+            required
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            className="p-3 rounded bg-black border border-zinc-700"
+            required
+          />
+
+          <button
+            type="submit"
+            className="bg-yellow-500 text-black font-semibold py-3 rounded hover:bg-yellow-400 transition"
+          >
+            Login
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+  );
 }

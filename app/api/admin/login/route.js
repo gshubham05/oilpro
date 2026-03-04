@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
-
   const body = await req.json();
   const { email, password } = body;
 
@@ -23,24 +22,22 @@ export async function POST(req) {
   }
 
   // create token
-  const token = jwt.sign(
-    { role: "admin" },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" }
-  );
-
-  // response create
-  const response = NextResponse.json({
-    success: true,
-    message: "Login successful"
+  const token = jwt.sign({ adminEmail }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
   });
 
-  // cookie set
+  // create response
+  const response = NextResponse.json({
+    success: true,
+    message: "Login successful",
+  });
+
+  // set cookie
   response.cookies.set("token", token, {
     httpOnly: true,
     secure: false,
     path: "/",
-    maxAge: 60 * 60 * 24
+    maxAge: 60 * 60 * 24,
   });
 
   return response;
